@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>qunittest.py</title>
+  <link rel="stylesheet" href="http://jashkenas.github.com/docco/resources/docco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <table cellspacing=0 cellpadding=0>
+  <thead>
+    <tr>
+      <th class=docs><h1>qunittest.py</h1></th>
+      <th class=code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-1">&#182;</a>
+        </div>
+        
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-2'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-2">&#182;</a>
+        </div>
+        <p><strong>qunittest</strong> is an standard Python <code>unittest</code> enhancement for PyQt4, allowing
+you to test asynchronous code using standard synchronous testing facility.</p>
+
+<p>The source for <code>qunittest</code> is available on <a href="https://www.github.com/dejw/qunittest">GitHub</a>, and released under
+the MIT license.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Prerequisites'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Prerequisites">&#182;</a>
+        </div>
+        <h2>Prerequisites</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-4">&#182;</a>
+        </div>
+        <p>Import unittest2 or unittest</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">unittest2</span> <span class="kn">as</span> <span class="nn">unittest</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">unittest</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-5">&#182;</a>
+        </div>
+        <p>&hellip; and some standard Python libraries</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">contextlib</span>
+<span class="kn">import</span> <span class="nn">re</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-6">&#182;</a>
+        </div>
+        <p>&hellip; and several PyQt classes</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="kn">from</span> <span class="nn">PyQt4.QtCore</span> <span class="kn">import</span> <span class="n">QTimer</span>
+<span class="kn">from</span> <span class="nn">PyQt4.QtTest</span> <span class="kn">import</span> <span class="n">QTest</span>
+<span class="kn">from</span> <span class="nn">PyQt4.QtGui</span> <span class="kn">import</span> <span class="n">QApplication</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-The_code'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-The_code">&#182;</a>
+        </div>
+        <h2>The code</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-8'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-8">&#182;</a>
+        </div>
+        <p>Override standard main method, by invoking it inside PyQt event loop</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">qapplication</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+
+    <span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="n">qapplication</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-9'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-9">&#182;</a>
+        </div>
+        <p>Helper returning the name of a given signal</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="k">def</span> <span class="nf">_signal_name</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+    <span class="n">name_re</span> <span class="o">=</span><span class="s">&quot;signal (\w+) of (\w+)&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">name_re</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&quot;??&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">#</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">_SignalConnector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-10'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-10">&#182;</a>
+        </div>
+        <p>Encapsulates signal assertion testing</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">callable_</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="n">test</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callable_</span> <span class="o">=</span> <span class="n">callable_</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">called_with</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emited</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">signal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_asserted</span> <span class="o">=</span> <span class="bp">False</span>
+
+        <span class="n">signal</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_signal_emited</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-11'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-11">&#182;</a>
+        </div>
+        <p>Store given parameters and mark signal as <code>emited</code></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">on_signal_emited</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">called_with</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emited</span> <span class="o">=</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">assertEmission</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-12'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-12">&#182;</a>
+        </div>
+        <p>Assert once wheter signal was emited or not</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="n">was_asserted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_asserted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_asserted</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">was_asserted</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">emited</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s">&quot;signal </span><span class="si">%s</span><span class="s"> not emited&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">_signal_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="p">)))</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-13'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-13">&#182;</a>
+        </div>
+        <p>Call given callable is necessary</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callable_</span><span class="p">:</span>
+                <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">called_with</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">callable_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-14'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-14">&#182;</a>
+        </div>
+        <p>Assert emission when context is entered</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="bp">self</span><span class="o">.</span><span class="n">assertEmission</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">called_with</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">False</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Unit_Testing'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Unit_Testing">&#182;</a>
+        </div>
+        <h2>Unit Testing</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-16'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-16">&#182;</a>
+        </div>
+        <p><code>qunittest</code> does not force much abould how test should look &ndash; it just adds
+several helpers for asynchronous code testing.</p>
+
+<p>Common test case may look like this:</p>
+
+<pre><code>import qunittest
+from calculator import Calculator
+
+class TestCalculator(qunittest.TestCase):
+    def setUp(self):
+        self.calc = Calculator()
+
+    def test_should_add_two_numbers_synchronously(self):
+        # given
+        a, b = 2, 3
+
+        # when
+        r = self.calc.add(a, b)
+
+        # then
+        self.assertEqual(5, r)
+
+    def test_should_calculate_factorial_in_background(self):
+        # given
+
+        # when
+        self.calc.factorial(20)
+
+        # then
+        self.assertEmited(self.calc.done) with (args, kwargs):
+            self.assertEqual([2432902008176640000], args)
+
+if __name__ == &ldquo;__main__&rdquo;:
+    main()
+</code></pre>
+
+<p>Test can be run by typing:</p>
+
+<pre><code>python test_calculator.py
+</code></pre>
+
+<p>Automatic test discovery is not supported now, because testing PyQt needs
+an instance of <code>QApplication</code> and its <code>exec_</code> method is blocking.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-TestCase_class'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-TestCase_class">&#182;</a>
+        </div>
+        <h2>TestCase class</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="k">class</span> <span class="nc">TestCase</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-18'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-18">&#182;</a>
+        </div>
+        <p>Extends standard <code>unittest.TestCase</code> with several PyQt4 testing features
+useful for asynchronous testing.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TestCase</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clearSignalConnectors</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_succeeded</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addCleanup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clearSignalConnectors</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tearDown</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decorateTearDown</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tearDown</span><span class="p">)</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Protected_methods'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Protected_methods">&#182;</a>
+        </div>
+        <h2>Protected methods</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">_clearSignalConnectors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connectedSignals</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">_decorateTearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tearDown</span><span class="p">):</span>
+        <span class="nd">@functools.wraps</span><span class="p">(</span><span class="n">tearDown</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">decorator</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ensureEmitedSignals</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">tearDown</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">decorator</span>
+
+    <span class="k">def</span> <span class="nf">_ensureEmitedSignals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-20'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-20">&#182;</a>
+        </div>
+        <p>Checks if signals were acually emited. Raises AssertionError if no.
+TODO: add information about line</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="k">for</span> <span class="n">signal</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connectedSignals</span><span class="p">:</span>
+            <span class="n">signal</span><span class="o">.</span><span class="n">assertEmission</span><span class="p">()</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Assertions'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Assertions">&#182;</a>
+        </div>
+        <h2>Assertions</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">assertEmited</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">callable_</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-22'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-22">&#182;</a>
+        </div>
+        <p>Asserts if given <code>signal</code> was emited. Waits 1 second by default,
+before asserts signal emission.</p>
+
+<p>If <code>callable_</code> is given, it should be a function which takes two
+arguments: <code>args</code> and <code>kwargs</code>. It will be called after blocking
+operation or when assertion about signal emission is made and
+signal was emited.</p>
+
+<p>When timeout is not <code>False</code>, method call is blocking, and ends
+after <code>timeout</code> seconds. After that time, it validates wether
+signal was emited.</p>
+
+<p>When timeout is <code>False</code>, method is non blocking, and test should wait
+for signals afterwards. Otherwise, at the end of the test, all
+signal emissions are checked if appeared.</p>
+
+<p>Function returns context, which yields to list of parameters given
+to signal. It can be useful for testing given parameters. Following
+code:</p>
+
+<pre><code>with self.assertEmited(widget.signal) as (args, kwargs):
+    self.assertEqual(1, len(args))
+    self.assertEqual(&ldquo;Hello World!&rdquo;, args[0])
+</code></pre>
+
+<p>will wait 1 second and test for correct parameters, is signal was
+emtied.</p>
+
+<p>Note that code:</p>
+
+<pre><code>with self.assertEmited(widget.signal, timeout=False) as (a, k):
+    # Will not be invoked
+</code></pre>
+
+<p>will always fail since signal cannot be emited in the time of its
+connection &ndash; code inside the context will not be invoked at all.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="n">connector</span> <span class="o">=</span> <span class="n">_SignalConnector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">callable_</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connectedSignals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">connector</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">timeout</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">waitFor</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="n">connector</span><span class="o">.</span><span class="n">assertEmission</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">connector</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Helper_methods'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Helper_methods">&#182;</a>
+        </div>
+        <h2>Helper methods</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="nd">@contextlib.contextmanager</span>
+    <span class="k">def</span> <span class="nf">invokeAfter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">,</span> <span class="n">callable_</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-24'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-24">&#182;</a>
+        </div>
+        <p>Waits given amount of time and executes the context.</p>
+
+<p>If <code>callable_</code> is given, executes it, instead of context.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="bp">self</span><span class="o">.</span><span class="n">waitFor</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">callable_</span><span class="p">:</span>
+            <span class="n">callable_</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">yield</span>
+
+    <span class="k">def</span> <span class="nf">waitFor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">):</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-25'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-25">&#182;</a>
+        </div>
+        <p>Waits given amount of time.</p>
+
+<pre><code>self.widget.loadImage(url)
+self.waitFor(seconds=10)
+</code></pre>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="n">QTest</span><span class="o">.</span><span class="n">qWait</span><span class="p">(</span><span class="n">seconds</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">succeed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bool_</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-26'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-26">&#182;</a>
+        </div>
+        <p>Marks test as suceeded for next <code>failAfter()</code> invocation.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="bp">self</span><span class="o">.</span><span class="n">_succeeded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_succeeded</span> <span class="ow">or</span> <span class="n">bool_</span>
+
+    <span class="k">def</span> <span class="nf">failAfter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seconds</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-27'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-27">&#182;</a>
+        </div>
+        <p>Waits given amount of time, and fails the test if <code>succeed(bool)</code>
+is not called &ndash; in most common case, <code>succeed(bool)</code> should be called
+asynchronously (in signal handler):</p>
+
+<pre><code>self.widget.signal.connect(lambda: self.succeed())
+self.failAfter(1, &ldquo;signal not emited?&rdquo;)
+</code></pre>
+
+<p>After invocation, test is no longer consider as succeeded.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>        <span class="bp">self</span><span class="o">.</span><span class="n">waitFor</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_succeeded</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_succeeded</span> <span class="o">=</span> <span class="bp">False</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Credits'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Credits">&#182;</a>
+        </div>
+        <h2>Credits</h2>
+
+<ul>
+<li><strong>Who is responsible:</strong> <a href="https://github.com/dejw">Dawid Fatyga</a></li>
+<li><strong>Source:</strong> <a href="https://www.github.com/dejw/qunittest">GitHub</a></li>
+<li><strong>Doc. generator:</strong> <a href="http://rtomayko.github.com/rocco/">rocco</a></li>
+</ul>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
